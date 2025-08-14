@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO-FSK - High-order FSK Implementation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fsk-blue': '#007acc',
+                        'fsk-dark': '#1a1a1a',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-fsk-blue">GO-FSK</h1>
+                    <span class="ml-3 text-sm text-gray-500">High-order FSK Implementation</span>
+                </div>
+                <nav class="flex space-x-6">
+                    <a href="https://github.com/gleicon/go-fsk" class="text-gray-600 hover:text-fsk-blue transition-colors">GitHub</a>
+                    <a href="modem.html" class="bg-fsk-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">Try Online Modem</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    Frequency Shift Keying in Go
+                </h2>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    High-order FSK implementation supporting both audible and ultrasonic frequencies with real-time audio capabilities. 
+                    Works everywhere: CLI, WebAssembly, and embedded systems.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="modem.html" class="bg-fsk-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Test Online Modem
+                    </a>
+                    <a href="https://github.com/gleicon/go-fsk" class="border-2 border-fsk-blue text-fsk-blue px-8 py-3 rounded-lg font-semibold hover:bg-fsk-blue hover:text-white transition-colors">
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 class="text-3xl font-bold text-center mb-16">Key Features</h3>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Core Algorithm -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-fsk-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Pure Algorithm</h4>
+                    <p class="text-gray-600">Zero-dependency core implementation that works everywhere: CLI, WebAssembly, embedded systems.</p>
+                </div>
+
+                <!-- Real-time Audio -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Real-time Audio</h4>
+                    <p class="text-gray-600">Cross-platform audio I/O with low latency for live transmission and reception using malgo.</p>
+                </div>
+
+                <!-- WebAssembly -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9-9a9 9 0 00-9 9m0 0l5.657 5.657M9 12l5.657-5.657"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Browser Support</h4>
+                    <p class="text-gray-600">WebAssembly implementation allows FSK communication directly in web browsers.</p>
+                </div>
+
+                <!-- Configurable -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100-4m0 4v2m0-6V4"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Highly Configurable</h4>
+                    <p class="text-gray-600">Adjustable frequencies, FSK orders, baud rates. Support for audible and ultrasonic ranges.</p>
+                </div>
+
+                <!-- Multi-platform -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Cross-platform</h4>
+                    <p class="text-gray-600">Works on Windows, macOS, Linux, BSD with support for various audio systems.</p>
+                </div>
+
+                <!-- Applications -->
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Multiple Applications</h4>
+                    <p class="text-gray-600">Device pairing, data transmission, retro computing, ultrasonic communication, IoT networks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="bg-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl font-bold mb-4">Modular Architecture</h3>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Clean separation of concerns enables code reuse across platforms and applications.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Core Package -->
+                <div class="text-center">
+                    <div class="bg-blue-50 p-6 rounded-lg mb-4">
+                        <div class="w-16 h-16 bg-fsk-blue rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-2">Core Package</h4>
+                        <p class="text-sm text-gray-600 mb-4">fsk/core/</p>
+                        <ul class="text-sm text-gray-600 text-left space-y-1">
+                            <li>• Pure FSK algorithm</li>
+                            <li>• No external dependencies</li>
+                            <li>• WebAssembly compatible</li>
+                            <li>• Signal processing logic</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Realtime Package -->
+                <div class="text-center">
+                    <div class="bg-green-50 p-6 rounded-lg mb-4">
+                        <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 14.142M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-2">Realtime Package</h4>
+                        <p class="text-sm text-gray-600 mb-4">fsk/realtime/</p>
+                        <ul class="text-sm text-gray-600 text-left space-y-1">
+                            <li>• Real-time audio I/O</li>
+                            <li>• Cross-platform (malgo)</li>
+                            <li>• Desktop/server only</li>
+                            <li>• Chat and channels</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Utils Package -->
+                <div class="text-center">
+                    <div class="bg-purple-50 p-6 rounded-lg mb-4">
+                        <div class="w-16 h-16 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-2">Utils Package</h4>
+                        <p class="text-sm text-gray-600 mb-4">fsk/utils/</p>
+                        <ul class="text-sm text-gray-600 text-left space-y-1">
+                            <li>• WAV file I/O</li>
+                            <li>• Platform independent</li>
+                            <li>• File operations</li>
+                            <li>• Shared utilities</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Examples -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl font-bold mb-4">Usage Examples</h3>
+                <p class="text-xl text-gray-600">Simple APIs for different use cases</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Core Usage -->
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <h4 class="text-lg font-semibold text-white mb-4">Core Algorithm (WebAssembly Compatible)</h4>
+                    <pre class="text-sm text-green-400 overflow-x-auto"><code>import "github.com/gleicon/go-fsk/fsk/core"
+
+// Create FSK modem
+config := core.DefaultConfig()
+modem := core.New(config)
+
+// Encode message
+signal := modem.Encode([]byte("Hello FSK"))
+
+// Decode signal
+decoded := modem.Decode(signal)
+fmt.Printf("Decoded: %s\n", string(decoded))</code></pre>
+                </div>
+
+                <!-- Real-time Usage -->
+                <div class="bg-gray-900 p-6 rounded-lg">
+                    <h4 class="text-lg font-semibold text-white mb-4">Real-time Audio (Desktop/Server)</h4>
+                    <pre class="text-sm text-green-400 overflow-x-auto"><code>import (
+    "github.com/gleicon/go-fsk/fsk/core"
+    "github.com/gleicon/go-fsk/fsk/realtime"
+)
+
+modem := core.New(core.DefaultConfig())
+
+// Real-time transmission
+transmitter, _ := realtime.NewTransmitter(modem)
+transmitter.Transmit([]byte("Live data"))</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications -->
+    <section class="bg-gray-100 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl font-bold mb-4">Applications</h3>
+                <p class="text-xl text-gray-600">Real-world use cases for FSK technology</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-fsk-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold mb-2">Device Pairing</h4>
+                    <p class="text-sm text-gray-600">Audio-based device discovery and pairing</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9-9a9 9 0 00-9 9m0 0l5.657 5.657M9 12l5.657-5.657"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold mb-2">Browser Communication</h4>
+                    <p class="text-sm text-gray-600">Web-to-device audio transmission</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold mb-2">Retro Computing</h4>
+                    <p class="text-sm text-gray-600">MSX and ZX Spectrum tape simulation</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg text-center">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold mb-2">Ultrasonic Comm</h4>
+                    <p class="text-sm text-gray-600">Inaudible frequency communication</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-fsk-blue py-20">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h3 class="text-3xl font-bold text-white mb-6">Ready to Try FSK?</h3>
+            <p class="text-xl text-blue-100 mb-8">
+                Test the online modem or explore the source code to get started with FSK communication.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="modem.html" class="bg-white text-fsk-blue px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    Try Online Modem
+                </a>
+                <a href="https://github.com/gleicon/go-fsk" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-fsk-blue transition-colors">
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">GO-FSK</h4>
+                    <p class="text-sm text-gray-400">
+                        High-order FSK implementation in Go with WebAssembly support.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Documentation</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/gleicon/go-fsk" class="text-gray-400 hover:text-white transition-colors">Getting Started</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/blob/main/fsk/core/README.md" class="text-gray-400 hover:text-white transition-colors">Core Package</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/blob/main/fsk/realtime/README.md" class="text-gray-400 hover:text-white transition-colors">Realtime Package</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/blob/main/fsk/MIGRATION.md" class="text-gray-400 hover:text-white transition-colors">Migration Guide</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Examples</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/gleicon/go-fsk/tree/main/examples/simple" class="text-gray-400 hover:text-white transition-colors">Simple Example</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/tree/main/examples/ultrasonic" class="text-gray-400 hover:text-white transition-colors">Ultrasonic Demo</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/tree/main/examples/chat-tui" class="text-gray-400 hover:text-white transition-colors">Chat TUI</a></li>
+                        <li><a href="modem.html" class="text-gray-400 hover:text-white transition-colors">Online Modem</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://github.com/gleicon/go-fsk/tree/main/wasm" class="text-gray-400 hover:text-white transition-colors">WebAssembly Demo</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/blob/main/oldcomputertapes.md" class="text-gray-400 hover:text-white transition-colors">Retro Computing</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/issues" class="text-gray-400 hover:text-white transition-colors">Issues</a></li>
+                        <li><a href="https://github.com/gleicon/go-fsk/releases" class="text-gray-400 hover:text-white transition-colors">Releases</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2024 GO-FSK Project. Open source under MIT license.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

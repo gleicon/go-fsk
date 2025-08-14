@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online FSK Modem - GO-FSK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'fsk-blue': '#007acc',
+                        'fsk-dark': '#1a1a1a',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="text-2xl font-bold text-fsk-blue">GO-FSK</a>
+                    <span class="ml-3 text-sm text-gray-500">Online Modem</span>
+                </div>
+                <nav class="flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-fsk-blue transition-colors">← Back to Main</a>
+                    <a href="https://github.com/gleicon/go-fsk" class="text-gray-600 hover:text-fsk-blue transition-colors">GitHub</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hero -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Online FSK Modem</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Encode text messages into FSK audio signals directly in your browser. 
+                Perfect for testing between two computers or browser-to-device communication.
+            </p>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-blue-50 border-l-4 border-fsk-blue p-6 mb-8">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-fsk-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-lg font-medium text-fsk-blue mb-2">How to Test Between Two Browsers/Computers</h3>
+                    <div class="text-gray-700 space-y-2">
+                        <p><strong>1. Setup:</strong> Open this page on two different computers with speakers/microphones</p>
+                        <p><strong>2. Configure:</strong> Use the same FSK settings on both computers</p>
+                        <p><strong>3. Transmit:</strong> Type a message on one computer and click "Encode & Play Audio"</p>
+                        <p><strong>4. Receive:</strong> The other computer should be able to hear and decode the message</p>
+                        <p class="text-sm text-gray-600"><em>For best results, use ultrasonic frequencies (22kHz+) to avoid audible interference</em></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Configuration Panel -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">FSK Configuration</h2>
+
+                <!-- Preset Buttons -->
+                <div class="flex flex-wrap gap-3 mb-6">
+                    <button onclick="loadDefaultConfig()" class="bg-fsk-blue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Default</button>
+                    <button onclick="loadUltrasonicConfig()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition-colors">Ultrasonic</button>
+                    <button onclick="loadMSXConfig()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">MSX</button>
+                    <button onclick="loadSpectrumConfig()" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition-colors">ZX Spectrum</button>
+                </div>
+
+                <!-- Configuration Controls -->
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Base Frequency (Hz)</label>
+                            <input type="number" id="baseFreq" value="1000" min="100" max="25000" step="100" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-fsk-blue focus:border-fsk-blue">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Frequency Spacing (Hz)</label>
+                            <input type="number" id="freqSpacing" value="200" min="50" max="2000" step="50" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-fsk-blue focus:border-fsk-blue">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">FSK Order</label>
+                            <select id="order" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-fsk-blue focus:border-fsk-blue">
+                                <option value="1">1 (2 symbols)</option>
+                                <option value="2" selected>2 (4 symbols)</option>
+                                <option value="3">3 (8 symbols)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Baud Rate</label>
+                            <input type="number" id="baudRate" value="100" min="10" max="2400" step="10" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-fsk-blue focus:border-fsk-blue">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sample Rate</label>
+                        <select id="sampleRate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-fsk-blue focus:border-fsk-blue">
+                            <option value="22050">22.05 kHz</option>
+                            <option value="44100">44.1 kHz</option>
+                            <option value="48000" selected>48 kHz</option>
+                        </select>
+                    </div>
+
+                    <button onclick="initializeFSK()" 
+                            class="w-full bg-fsk-blue text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold">
+                        Initialize FSK Modem
+                    </button>
+                </div>
+
+                <!-- Status Display -->
+                <div id="configStatus" class="mt-4 p-3 rounded-md bg-gray-100 text-sm font-mono"></div>
+
+                <!-- Frequency Display -->
+                <div id="frequencyDisplay" class="mt-4 p-3 rounded-md bg-blue-50 border border-blue-200" style="display: none;">
+                    <div class="text-sm font-medium text-blue-800 mb-2">Symbol Frequencies:</div>
+                    <div id="frequencies" class="text-sm font-mono text-blue-700"></div>
+                </div>
+            </div>
+
+            <!-- Message Panel -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Message Transmission</h2>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
+                        <textarea id="messageText" placeholder="Type your message here..." 
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-fsk-blue focus:border-fsk-blue h-24 resize-none">Hello from FSK-WASM!</textarea>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="encodeAndPlay()" 
+                                class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition-colors font-semibold">
+                            🎵 Encode & Play
+                        </button>
+                        <button onclick="stopAudio()" 
+                                class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition-colors font-semibold">
+                            ⏹️ Stop Audio
+                        </button>
+                        <button onclick="generateTestTone()" 
+                                class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors font-semibold">
+                            🔊 Test Tone
+                        </button>
+                    </div>
+
+                    <!-- Volume Control -->
+                    <div class="flex items-center space-x-3">
+                        <label class="text-sm font-medium text-gray-700">Volume:</label>
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50" 
+                               oninput="updateVolume(this.value)" 
+                               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        <span id="volumeValue" class="text-sm font-mono text-gray-600 w-12">50%</span>
+                    </div>
+                </div>
+
+                <!-- Encoding Status -->
+                <div id="encodingStatus" class="mt-4 p-3 rounded-md bg-gray-100 text-sm font-mono"></div>
+            </div>
+        </div>
+
+        <!-- CLI Instructions -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Receive with CLI Tool</h2>
+            
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3 text-sm text-yellow-700">
+                        <p><strong>Setup Instructions:</strong></p>
+                        <ol class="list-decimal list-inside space-y-1 mt-2">
+                            <li>Ensure your computer's speakers are turned up</li>
+                            <li>Position another computer with a microphone nearby</li>
+                            <li>Run the fsk-modem command below on the receiving computer</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <input type="text" id="receiveCommand" readonly 
+                       value="./build/fsk-modem -mode rrx -freq '1000,200' -order 2 -baud 100 -duration 10"
+                       class="flex-1 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md font-mono text-sm">
+                <button onclick="copyCommand()" 
+                        class="bg-fsk-blue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                    Copy
+                </button>
+            </div>
+
+            <!-- Configuration Examples -->
+            <div class="mt-4 text-sm text-gray-600">
+                <p class="font-medium mb-2">Configuration Examples:</p>
+                <ul class="space-y-1 font-mono text-xs">
+                    <li><strong>MSX Compatible:</strong> <code>-freq "1200,1200" -order 1 -baud 300</code></li>
+                    <li><strong>Ultrasonic:</strong> <code>-freq "22000,500" -order 2 -baud 100</code></li>
+                    <li><strong>High Speed:</strong> <code>-freq "2000,400" -order 2 -baud 200</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Audio Visualization -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Audio Visualization</h2>
+            <canvas id="waveformCanvas" width="800" height="200" 
+                    class="w-full border border-gray-300 rounded-md"></canvas>
+            <div id="audioInfo" class="mt-4 p-3 rounded-md bg-gray-100 text-sm font-mono"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm">
+                <a href="index.html" class="text-gray-400 hover:text-white transition-colors">GO-FSK Project</a> • 
+                <a href="https://github.com/gleicon/go-fsk" class="text-gray-400 hover:text-white transition-colors">GitHub</a> • 
+                WebAssembly FSK Modem
+            </p>
+        </div>
+    </footer>
+
+    <!-- WASM Loading -->
+    <script src="wasm_exec.js"></script>
+    <script src="fsk-demo.js"></script>
+</body>
+</html>
