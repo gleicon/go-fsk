@@ -3,9 +3,11 @@
 High-order FSK (Frequency Shift Keying) implementation supporting both audible and ultrasonic frequencies with real-time audio capabilities.
 
 This repository contains:
+
 - **FSK Library** (`fsk/`): Reusable Go package for FSK modulation/demodulation
 - **CLI Tool** (`cmd/fsk-modem/`): Command-line FSK modem application  
 - **Examples** (`examples/`): Demonstration programs and use cases
+- **WebAssembly Demo** (`wasm/`): Browser-based FSK transmission demo
 
 ## Features
 
@@ -46,6 +48,19 @@ make demo
 make all
 ```
 
+### WebAssembly Demo
+
+Try FSK in your browser without installation:
+
+```bash
+# Build and serve WASM demo
+make wasm-serve
+
+# Open http://localhost:8080 in your browser
+```
+
+The browser demo allows you to encode text messages into FSK audio signals that can be decoded by the fsk-modem CLI tool running on nearby computers.
+
 ### Alternative Installation Methods
 
 ```bash
@@ -81,6 +96,9 @@ make check
 make demo              # Basic FSK test
 make demo-file         # WAV file generation/decoding
 make demo-ultrasonic   # Ultrasonic example
+
+# WebAssembly
+make wasm-serve        # Build and serve browser demo
 
 # Development workflow
 make dev               # Format, vet, build, test
@@ -254,12 +272,14 @@ See `fsk/README.md` for complete library documentation.
 
 ## Applications
 
-- Acoustic data transmission
+- Acoustic data transmission between devices
+- Browser-to-device communication via audio
 - Ultrasonic communication
 - Audio steganography
 - Device-to-device pairing
 - IoT sensor networks
 - Covert communication channels
+- Retro computer tape simulation (MSX, ZX Spectrum)
 
 ## Performance
 
@@ -291,6 +311,7 @@ make example-frequency-test  # Frequency collision testing
 - **`ultrasonic/`**: Ultrasonic communication examples (22kHz+, inaudible)
 - **`chat-tui/`**: Terminal UI chat application with multi-channel support
 - **`frequency-test/`**: Frequency collision and mixing demonstrations
+- **`wasm/`**: WebAssembly browser demo for FSK transmission
 
 ### Running Examples
 
@@ -306,6 +327,9 @@ make example-frequency-test  # Frequency collision testing
 
 # Frequency collision tests
 ./build/examples/frequency-test [scenario]
+
+# WebAssembly browser demo
+make wasm-serve
 ```
 
 ## Development

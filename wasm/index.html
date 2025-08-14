@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FSK Modem WebAssembly Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            color: #444;
+            margin-top: 0;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+        }
+
+        textarea {
+            width: 300px;
+            height: 60px;
+            resize: vertical;
+        }
+
+        button {
+            background: #007acc;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: #005999;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .preset-buttons {
+            margin-bottom: 20px;
+        }
+
+        .status {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .success {
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+
+        .audio-controls {
+            margin-top: 15px;
+        }
+
+        .frequency-display {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        canvas {
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>FSK Modem WebAssembly Demo</h1>
+
+        <div class="info-box">
+            <strong>What is this?</strong><br>
+            This demo allows you to encode text messages into FSK (Frequency Shift Keying) audio signals directly in
+            your web browser.
+            The generated audio can be decoded by the <code>fsk-modem</code> command-line tool running on a nearby
+            computer.
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="section">
+            <h2>FSK Configuration</h2>
+
+            <div class="preset-buttons">
+                <button onclick="loadDefaultConfig()">Default Config</button>
+                <button onclick="loadUltrasonicConfig()">Ultrasonic Config</button>
+                <button onclick="loadMSXConfig()">MSX Compatible</button>
+                <button onclick="loadSpectrumConfig()">ZX Spectrum Style</button>
+            </div>
+
+            <div class="control-group">
+                <label>Base Frequency:</label>
+                <input type="number" id="baseFreq" value="1000" min="100" max="25000" step="100"> Hz
+            </div>
+
+            <div class="control-group">
+                <label>Freq Spacing:</label>
+                <input type="number" id="freqSpacing" value="200" min="50" max="2000" step="50"> Hz
+            </div>
+
+            <div class="control-group">
+                <label>FSK Order:</label>
+                <select id="order">
+                    <option value="1">1 (2 symbols)</option>
+                    <option value="2" selected>2 (4 symbols)</option>
+                    <option value="3">3 (8 symbols)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Baud Rate:</label>
+                <input type="number" id="baudRate" value="100" min="10" max="2400" step="10"> symbols/sec
+            </div>
+
+            <div class="control-group">
+                <label>Sample Rate:</label>
+                <select id="sampleRate">
+                    <option value="22050">22.05 kHz</option>
+                    <option value="44100">44.1 kHz</option>
+                    <option value="48000" selected>48 kHz</option>
+                </select>
+            </div>
+
+            <button onclick="initializeFSK()">Initialize FSK Modem</button>
+
+            <div id="configStatus" class="status"></div>
+
+            <div id="frequencyDisplay" class="frequency-display" style="display: none;">
+                <strong>Symbol Frequencies:</strong><br>
+                <span id="frequencies"></span>
+            </div>
+        </div>
+
+        <!-- Message Encoding Section -->
+        <div class="section">
+            <h2>Message Transmission</h2>
+
+            <div class="control-group">
+                <label>Message:</label>
+                <textarea id="messageText" placeholder="Type your message here...">Hello from FSK-WASM!</textarea>
+            </div>
+
+            <div class="control-group">
+                <button onclick="encodeAndPlay()">Encode & Play Audio</button>
+                <button onclick="stopAudio()">Stop Audio</button>
+                <button onclick="generateTestTone()">Test Tone (1200 Hz)</button>
+            </div>
+
+            <div class="audio-controls">
+                <label>Volume:</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50" oninput="updateVolume(this.value)">
+                <span id="volumeValue">50%</span>
+            </div>
+
+            <div id="encodingStatus" class="status"></div>
+        </div>
+
+        <!-- Receiver Instructions -->
+        <div class="section">
+            <h2>How to Receive with fsk-modem</h2>
+
+            <div class="warning-box">
+                <strong>Setup Instructions:</strong><br>
+                1. Ensure your computer's speakers are turned up<br>
+                2. Position another computer with a microphone nearby<br>
+                3. Run the fsk-modem command below on the receiving computer
+            </div>
+
+            <div class="control-group">
+                <label>Command:</label>
+                <input type="text" id="receiveCommand" readonly
+                    value="./build/fsk-modem -mode rrx -freq '1000,200' -order 2 -baud 100 -duration 10">
+                <button onclick="copyCommand()">Copy</button>
+            </div>
+
+            <div class="info-box">
+                <strong>For different configurations:</strong><br>
+                • MSX Compatible: <code>-freq "1200,1200" -order 1 -baud 300</code><br>
+                • Ultrasonic: <code>-freq "22000,500" -order 2 -baud 100</code><br>
+                • High Speed: <code>-freq "2000,400" -order 2 -baud 200</code>
+            </div>
+        </div>
+
+        <!-- Audio Visualization -->
+        <div class="section">
+            <h2>Audio Visualization</h2>
+            <canvas id="waveformCanvas" width="600" height="200"></canvas>
+            <div id="audioInfo" class="status"></div>
+        </div>
+    </div>
+
+    <!-- WASM Loading -->
+    <script src="wasm_exec.js"></script>
+    <script src="fsk-demo.js"></script>
+</body>
+
+</html>

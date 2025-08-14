@@ -50,6 +50,11 @@ help:
 	@echo "  make demo-file      Generate and decode WAV file"
 	@echo "  make demo-ultrasonic Run ultrasonic example"
 	@echo ""
+	@echo "WebAssembly Commands:"
+	@echo "  make wasm           Build WASM demo"
+	@echo "  make wasm-serve     Build and serve WASM demo (http://localhost:8080)"
+	@echo "  make wasm-clean     Clean WASM build artifacts"
+	@echo ""
 	@echo "Install Commands:"
 	@echo "  make install        Install fsk-modem to \$$GOPATH/bin"
 	@echo "  make uninstall      Remove fsk-modem from \$$GOPATH/bin"
@@ -231,6 +236,36 @@ dev: clean fmt vet build test
 .PHONY: check
 check: fmt vet lint test
 	@echo "All checks passed"
+
+# WASM targets
+.PHONY: wasm
+wasm: wasm-build wasm-copy-exec
+
+.PHONY: wasm-build
+wasm-build:
+	@echo "Building WASM binary..."
+	@mkdir -p wasm
+	GOOS=js GOARCH=wasm go build -o wasm/fsk.wasm ./wasm/
+
+.PHONY: wasm-copy-exec
+wasm-copy-exec:
+	@echo "Copying WASM executor..."
+	@cp "$$(go env GOROOT)/lib/wasm/wasm_exec.js" wasm/ 2>/dev/null || \
+	 cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" wasm/ 2>/dev/null || \
+	 echo "Warning: Could not find wasm_exec.js, please copy manually"
+
+.PHONY: wasm-serve
+wasm-serve: wasm
+	@echo "Starting development server for WASM demo..."
+	@echo "Open http://localhost:8080 in your browser"
+	@cd wasm && python3 -m http.server 8080 2>/dev/null || \
+	 cd wasm && python -m SimpleHTTPServer 8080 2>/dev/null || \
+	 echo "Error: Python not found. Please serve the wasm/ directory manually."
+
+.PHONY: wasm-clean
+wasm-clean:
+	@echo "Cleaning WASM build artifacts..."
+	@rm -f wasm/fsk.wasm wasm/wasm_exec.js
 
 # Docker targets (optional)
 .PHONY: docker-build

@@ -3,3 +3,4 @@ test.wav
 fsk-modem
 *.wav
 build/
+.DS_Store
