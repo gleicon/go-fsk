@@ -4,7 +4,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/gleicon/go-fsk/fsk"
+	"github.com/gleicon/go-fsk/fsk/realtime"
 )
 
 func main() {
@@ -13,7 +13,7 @@ func main() {
 	fmt.Println()
 
 	// Show channel configuration
-	channels := fsk.PredefinedChannels()
+	channels := realtime.PredefinedChannels()
 	fmt.Println("Available Frequency Channels:")
 	for i, ch := range channels {
 		fmt.Printf("  %d. %s (%.0fkHz)\n", i+1, ch.Name, ch.BaseFreq/1000)

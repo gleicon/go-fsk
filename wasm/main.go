@@ -4,10 +4,12 @@ package main
 import (
 	"encoding/json"
 	"syscall/js"
+
+	"github.com/gleicon/go-fsk/fsk/core"
 )
 
 // Global modem instance
-var modem *Modem
+var modem *core.Modem
 
 // FSKConfig represents the configuration for JavaScript
 type FSKConfig struct {
@@ -38,7 +40,7 @@ func initFSK(this js.Value, args []js.Value) interface{} {
 	}
 
 	// Create FSK configuration
-	fskConfig := Config{
+	fskConfig := core.Config{
 		BaseFreq:    config.BaseFreq,
 		FreqSpacing: config.FreqSpacing,
 		Order:       config.Order,
@@ -47,7 +49,7 @@ func initFSK(this js.Value, args []js.Value) interface{} {
 	}
 
 	// Initialize modem
-	modem = New(fskConfig)
+	modem = core.New(fskConfig)
 
 	return js.ValueOf(map[string]interface{}{
 		"success":      true,
@@ -104,7 +106,7 @@ func encodeMessage(this js.Value, args []js.Value) interface{} {
 
 // getDefaultConfig returns default FSK configuration
 func getDefaultConfig(this js.Value, args []js.Value) interface{} {
-	config := DefaultConfig()
+	config := core.DefaultConfig()
 	return js.ValueOf(map[string]interface{}{
 		"baseFreq":    config.BaseFreq,
 		"freqSpacing": config.FreqSpacing,
@@ -116,7 +118,7 @@ func getDefaultConfig(this js.Value, args []js.Value) interface{} {
 
 // getUltrasonicConfig returns ultrasonic FSK configuration
 func getUltrasonicConfig(this js.Value, args []js.Value) interface{} {
-	config := UltrasonicConfig()
+	config := core.UltrasonicConfig()
 	return js.ValueOf(map[string]interface{}{
 		"baseFreq":    config.BaseFreq,
 		"freqSpacing": config.FreqSpacing,

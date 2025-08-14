@@ -1,13 +1,16 @@
-package fsk
+// Package utils provides shared utilities for FSK operations.
+package utils
 
 import (
 	"encoding/binary"
 	"fmt"
 	"os"
+
+	"github.com/gleicon/go-fsk/fsk/core"
 )
 
 // WriteWAVFile writes audio samples to a WAV file (16-bit PCM).
-func (m *Modem) WriteWAVFile(filename string, signal []float32) error {
+func WriteWAVFile(filename string, signal []float32, config core.Config) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -37,10 +40,10 @@ func (m *Modem) WriteWAVFile(filename string, signal []float32) error {
 	binary.Write(file, binary.LittleEndian, uint16(1))
 
 	// Sample rate
-	binary.Write(file, binary.LittleEndian, uint32(m.config.SampleRate))
+	binary.Write(file, binary.LittleEndian, uint32(config.SampleRate))
 
 	// Byte rate
-	byteRate := uint32(m.config.SampleRate * 2)
+	byteRate := uint32(config.SampleRate * 2)
 	binary.Write(file, binary.LittleEndian, byteRate)
 
 	// Block align
@@ -70,7 +73,7 @@ func (m *Modem) WriteWAVFile(filename string, signal []float32) error {
 }
 
 // ReadWAVFile reads audio samples from a WAV file (16-bit PCM).
-func (m *Modem) ReadWAVFile(filename string) ([]float32, error) {
+func ReadWAVFile(filename string) ([]float32, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err

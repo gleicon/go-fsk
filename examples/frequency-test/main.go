@@ -7,7 +7,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/gleicon/go-fsk/fsk"
+	"github.com/gleicon/go-fsk/fsk/core"
+	"github.com/gleicon/go-fsk/fsk/utils"
 )
 
 func main() {
@@ -49,7 +50,7 @@ func testSameFrequencyCollision() {
 	fmt.Println("Two modems using identical frequencies - expect collisions")
 
 	// Both modems use same frequency
-	config := fsk.Config{
+	config := core.Config{
 		BaseFreq:    22000,
 		FreqSpacing: 500,
 		Order:       2,
@@ -57,8 +58,8 @@ func testSameFrequencyCollision() {
 		SampleRate:  48000,
 	}
 
-	modem1 := fsk.New(config)
-	modem2 := fsk.New(config)
+	modem1 := core.New(config)
+	modem2 := core.New(config)
 
 	message1 := "Message from Agent A"
 	message2 := "Message from Agent B"
@@ -99,7 +100,7 @@ func testSameFrequencyCollision() {
 	}
 
 	// Save mixed signal for analysis
-	err := modem1.WriteWAVFile("collision_mixed.wav", mixed)
+	err := utils.WriteWAVFile("collision_mixed.wav", mixed, modem1.Config())
 	if err == nil {
 		fmt.Println("Mixed signal saved to collision_mixed.wav")
 	}
@@ -110,7 +111,7 @@ func testOverlappingFrequencies() {
 	fmt.Println("Two modems with overlapping frequency ranges")
 
 	// Overlapping frequency ranges
-	config1 := fsk.Config{
+	config1 := core.Config{
 		BaseFreq:    22000, // 22000-23000 Hz
 		FreqSpacing: 300,
 		Order:       2,
@@ -118,7 +119,7 @@ func testOverlappingFrequencies() {
 		SampleRate:  48000,
 	}
 
-	config2 := fsk.Config{
+	config2 := core.Config{
 		BaseFreq:    22500, // 22500-23500 Hz (overlaps)
 		FreqSpacing: 300,
 		Order:       2,
@@ -126,8 +127,8 @@ func testOverlappingFrequencies() {
 		SampleRate:  48000,
 	}
 
-	modem1 := fsk.New(config1)
-	modem2 := fsk.New(config2)
+	modem1 := core.New(config1)
+	modem2 := core.New(config2)
 
 	message1 := "Agent A message"
 	message2 := "Agent B message"
@@ -163,7 +164,7 @@ func testOverlappingFrequencies() {
 	fmt.Printf("Agent A recovery: %t\n", success1)
 	fmt.Printf("Agent B recovery: %t\n", success2)
 
-	err := modem1.WriteWAVFile("overlap_mixed.wav", mixed)
+	err := utils.WriteWAVFile("overlap_mixed.wav", mixed, modem1.Config())
 	if err == nil {
 		fmt.Println("Mixed signal saved to overlap_mixed.wav")
 	}
@@ -173,7 +174,7 @@ func testSeparateFrequencies() {
 	fmt.Println("=== Separate Frequencies Test ===")
 	fmt.Println("Two modems using well-separated frequency ranges")
 
-	config1 := fsk.Config{
+	config1 := core.Config{
 		BaseFreq:    22000, // 22000-23000 Hz
 		FreqSpacing: 250,
 		Order:       2,
@@ -181,7 +182,7 @@ func testSeparateFrequencies() {
 		SampleRate:  48000,
 	}
 
-	config2 := fsk.Config{
+	config2 := core.Config{
 		BaseFreq:    24000, // 24000-25000 Hz (2kHz separation)
 		FreqSpacing: 250,
 		Order:       2,
@@ -189,8 +190,8 @@ func testSeparateFrequencies() {
 		SampleRate:  48000,
 	}
 
-	modem1 := fsk.New(config1)
-	modem2 := fsk.New(config2)
+	modem1 := core.New(config1)
+	modem2 := core.New(config2)
 
 	message1 := "Clean message from A"
 	message2 := "Clean message from B"
@@ -230,7 +231,7 @@ func testSeparateFrequencies() {
 		fmt.Println("SUCCESS: Clean separation allows both signals")
 	}
 
-	err := modem1.WriteWAVFile("clean_mixed.wav", mixed)
+	err := utils.WriteWAVFile("clean_mixed.wav", mixed, modem1.Config())
 	if err == nil {
 		fmt.Println("Mixed signal saved to clean_mixed.wav")
 	}
@@ -240,7 +241,7 @@ func testMultiChannelBroadcast() {
 	fmt.Println("=== Multi-Channel Broadcast Test ===")
 	fmt.Println("Multiple channels with different users")
 
-	channels := []fsk.Config{
+	channels := []core.Config{
 		{BaseFreq: 22000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000},
 		{BaseFreq: 24000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000},
 		{BaseFreq: 26000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000},
@@ -253,10 +254,10 @@ func testMultiChannelBroadcast() {
 	}
 
 	var signals [][]float32
-	var modems []*fsk.Modem
+	var modems []*core.Modem
 
 	for i, config := range channels {
-		modem := fsk.New(config)
+		modem := core.New(config)
 		signal := modem.Encode([]byte(messages[i]))
 		modems = append(modems, modem)
 		signals = append(signals, signal)
@@ -288,7 +289,7 @@ func testMultiChannelBroadcast() {
 			i+1, string(decoded), success)
 	}
 
-	err := modems[0].WriteWAVFile("multichannel_broadcast.wav", mixed)
+	err := utils.WriteWAVFile("multichannel_broadcast.wav", mixed, modems[0].Config())
 	if err == nil {
 		fmt.Println("Multi-channel signal saved to multichannel_broadcast.wav")
 	}
@@ -300,16 +301,16 @@ func testPointToPointDuplex() {
 
 	// Agent A: TX on 22kHz, RX on 24kHz
 	// Agent B: TX on 24kHz, RX on 22kHz
-	configA_TX := fsk.Config{BaseFreq: 22000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
-	configA_RX := fsk.Config{BaseFreq: 24000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
+	configA_TX := core.Config{BaseFreq: 22000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
+	configA_RX := core.Config{BaseFreq: 24000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
 
-	configB_TX := fsk.Config{BaseFreq: 24000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
-	configB_RX := fsk.Config{BaseFreq: 22000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
+	configB_TX := core.Config{BaseFreq: 24000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
+	configB_RX := core.Config{BaseFreq: 22000, FreqSpacing: 500, Order: 2, BaudRate: 100, SampleRate: 48000}
 
-	modemA_TX := fsk.New(configA_TX)
-	modemA_RX := fsk.New(configA_RX)
-	modemB_TX := fsk.New(configB_TX)
-	modemB_RX := fsk.New(configB_RX)
+	modemA_TX := core.New(configA_TX)
+	modemA_RX := core.New(configA_RX)
+	modemB_TX := core.New(configB_TX)
+	modemB_RX := core.New(configB_RX)
 
 	messageA_to_B := "A to B: Hello"
 	messageB_to_A := "B to A: Hi there"
@@ -355,7 +356,7 @@ func testPointToPointDuplex() {
 		fmt.Println("SUCCESS: Full duplex communication works!")
 	}
 
-	err := modemA_TX.WriteWAVFile("duplex_mixed.wav", mixed)
+	err := utils.WriteWAVFile("duplex_mixed.wav", mixed, modemA_TX.Config())
 	if err == nil {
 		fmt.Println("Duplex signal saved to duplex_mixed.wav")
 	}

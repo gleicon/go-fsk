@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gleicon/go-fsk/fsk"
+	"github.com/gleicon/go-fsk/fsk/core"
+	"github.com/gleicon/go-fsk/fsk/realtime"
+	"github.com/gleicon/go-fsk/fsk/utils"
 )
 
 func main() {
 	// Configure for ultrasonic communication (22kHz+)
-	config := fsk.UltrasonicConfig()
+	config := core.UltrasonicConfig()
 	config.BaseFreq = 22000  // 22kHz base (inaudible to most humans)
 	config.FreqSpacing = 500 // 500Hz spacing
 	config.BaudRate = 100    // 100 symbols/second
 
-	modem := fsk.New(config)
+	modem := core.New(config)
 	frequencies := modem.Frequencies()
 
 	fmt.Printf("Ultrasonic FSK Modem\n")
@@ -61,7 +63,7 @@ func main() {
 
 		// Save each test as WAV file
 		filename := fmt.Sprintf("ultrasonic_test_%d.wav", i+1)
-		err := modem.WriteWAVFile(filename, signal)
+		err := utils.WriteWAVFile(filename, signal, modem.Config())
 		if err != nil {
 			fmt.Printf("  Error saving %s: %v\n", filename, err)
 		} else {
@@ -76,7 +78,7 @@ func main() {
 	fmt.Printf("=======================================\n")
 
 	// Create transmitter
-	transmitter, err := fsk.NewRealTimeTransmitter(modem)
+	transmitter, err := realtime.NewTransmitter(modem)
 	if err != nil {
 		fmt.Printf("Failed to create transmitter: %v\n", err)
 		return

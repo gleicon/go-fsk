@@ -10,7 +10,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/gleicon/go-fsk/fsk"
+	"github.com/gleicon/go-fsk/fsk/realtime"
 )
 
 // Styles
@@ -60,8 +60,8 @@ var messageChan = make(chan messageReceivedMsg, 100)
 // Model holds the application state
 type Model struct {
 	username    string
-	chat        *fsk.MultiChannelChat
-	channels    []fsk.ChannelConfig
+	chat        *realtime.MultiChannelChat
+	channels    []realtime.ChannelConfig
 	activeChans []int
 	currentChan int
 	messages    []Message
@@ -98,7 +98,7 @@ func listenForMessages() tea.Cmd {
 }
 
 func initialModel() Model {
-	channels := fsk.PredefinedChannels()
+	channels := realtime.PredefinedChannels()
 	username := "User"
 	if len(os.Args) > 1 {
 		username = os.Args[1]
@@ -131,7 +131,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// Initialize chat system once we have the window
 		if m.chat == nil {
-			m.chat = fsk.NewMultiChannelChat(m.username, func(channelID int, username, message string) {
+			m.chat = realtime.NewMultiChannelChat(m.username, func(channelID int, username, message string) {
 				// Send received message to the global channel
 				select {
 				case messageChan <- messageReceivedMsg{

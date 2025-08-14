@@ -1,9 +1,11 @@
-package fsk
+package realtime
 
 import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/gleicon/go-fsk/fsk/core"
 )
 
 // ChannelConfig defines a frequency channel for communication
@@ -68,7 +70,7 @@ func (mc *MultiChannelChat) JoinChannel(channelConfig ChannelConfig, order int, 
 	mc.mu.Lock()
 	defer mc.mu.Unlock()
 
-	config := Config{
+	config := core.Config{
 		BaseFreq:    channelConfig.BaseFreq,
 		FreqSpacing: channelConfig.FreqSpacing,
 		Order:       order,
@@ -76,7 +78,7 @@ func (mc *MultiChannelChat) JoinChannel(channelConfig ChannelConfig, order int, 
 		SampleRate:  48000,
 	}
 
-	modem := New(config)
+	modem := core.New(config)
 	chatSession, err := NewChatSession(modem)
 	if err != nil {
 		return fmt.Errorf("failed to create chat session for channel %d: %v", channelConfig.ID, err)
@@ -185,8 +187,8 @@ func (mc *MultiChannelChat) Close() {
 
 // ChannelAnalyzer analyzes frequency channel conditions
 type ChannelAnalyzer struct {
-	modem    *Modem
-	recorder *RealTimeReceiver
+	modem    *core.Modem
+	recorder *Receiver
 	mu       sync.RWMutex
 	activity map[float64]float64 // frequency -> activity level
 	running  bool
@@ -195,7 +197,7 @@ type ChannelAnalyzer struct {
 // NewChannelAnalyzer creates a new channel analyzer
 func NewChannelAnalyzer() *ChannelAnalyzer {
 	// Use wideband configuration for analysis
-	config := Config{
+	config := core.Config{
 		BaseFreq:    18000, // Wide range for analysis
 		FreqSpacing: 100,   // Fine resolution
 		Order:       2,
@@ -203,7 +205,7 @@ func NewChannelAnalyzer() *ChannelAnalyzer {
 		SampleRate:  48000,
 	}
 
-	modem := New(config)
+	modem := core.New(config)
 	return &ChannelAnalyzer{
 		modem:    modem,
 		activity: make(map[float64]float64),
@@ -212,7 +214,7 @@ func NewChannelAnalyzer() *ChannelAnalyzer {
 
 // StartAnalysis begins monitoring channel activity
 func (ca *ChannelAnalyzer) StartAnalysis() error {
-	receiver, err := NewRealTimeReceiver(ca.modem, func(data []byte) {
+	receiver, err := NewReceiver(ca.modem, func(data []byte) {
 		// Activity detected callback
 		ca.mu.Lock()
 		defer ca.mu.Unlock()
