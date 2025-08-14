@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gleicon/go-fsk/fsk"
+	"github.com/gleicon/go-fsk/fsk/core"
+	"github.com/gleicon/go-fsk/fsk/utils"
 )
 
 func main() {
 	// Create FSK modem with default configuration
-	config := fsk.DefaultConfig()
-	modem := fsk.New(config)
+	config := core.DefaultConfig()
+	modem := core.New(config)
 
 	// Display configuration
 	fmt.Printf("FSK Configuration:\n")
@@ -46,7 +47,7 @@ func main() {
 
 	// Save to WAV file for testing
 	fmt.Printf("\nSaving signal to test.wav...\n")
-	err := modem.WriteWAVFile("test.wav", signal)
+	err := utils.WriteWAVFile("test.wav", signal, modem.Config())
 	if err != nil {
 		log.Printf("Error writing WAV file: %v", err)
 	} else {

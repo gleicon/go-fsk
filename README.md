@@ -4,7 +4,9 @@ High-order FSK (Frequency Shift Keying) implementation supporting both audible a
 
 This repository contains:
 
-- **FSK Library** (`fsk/`): Reusable Go package for FSK modulation/demodulation
+- **Core FSK Library** (`fsk/core/`): Pure algorithm implementation (no dependencies)
+- **Realtime Audio Library** (`fsk/realtime/`): Real-time I/O using malgo (desktop/server)
+- **Utilities Library** (`fsk/utils/`): File operations and shared utilities
 - **CLI Tool** (`cmd/fsk-modem/`): Command-line FSK modem application  
 - **Examples** (`examples/`): Demonstration programs and use cases
 - **WebAssembly Demo** (`wasm/`): Browser-based FSK transmission demo
@@ -60,6 +62,10 @@ make wasm-serve
 ```
 
 The browser demo allows you to encode text messages into FSK audio signals that can be decoded by the fsk-modem CLI tool running on nearby computers.
+
+### Migration from v1.x
+
+If upgrading from previous versions, see [`fsk/MIGRATION.md`](fsk/MIGRATION.md) for import path updates. The new modular structure provides better WebAssembly support and cleaner separation of concerns.
 
 ### Alternative Installation Methods
 
@@ -176,14 +182,16 @@ make example-chat
 
 ## Library Usage
 
-The FSK functionality is available as a reusable Go package:
+The FSK functionality is available as a modular Go package:
+
+### Core Algorithm (Works everywhere including WebAssembly)
 
 ```go
-import "github.com/gleicon/go-fsk/fsk"
+import "github.com/gleicon/go-fsk/fsk/core"
 
 // Basic usage
-config := fsk.DefaultConfig()
-modem := fsk.New(config)
+config := core.DefaultConfig()
+modem := core.New(config)
 
 // Encode message
 signal := modem.Encode([]byte("Hello FSK"))
@@ -193,19 +201,80 @@ decoded := modem.Decode(signal)
 fmt.Printf("Decoded: %s\n", string(decoded))
 
 // Ultrasonic configuration
-config = fsk.UltrasonicConfig()
+config = core.UltrasonicConfig()
 config.BaseFreq = 22000
-modem = fsk.New(config)
+modem = core.New(config)
+```
+
+### Real-time Audio (Desktop/server only)
+
+```go
+import (
+    "github.com/gleicon/go-fsk/fsk/core"
+    "github.com/gleicon/go-fsk/fsk/realtime"
+)
+
+modem := core.New(core.DefaultConfig())
 
 // Real-time transmission
-transmitter, err := fsk.NewRealTimeTransmitter(modem)
+transmitter, err := realtime.NewTransmitter(modem)
 if err == nil {
     transmitter.Transmit([]byte("Live data"))
     transmitter.Close()
 }
+
+// Real-time reception
+receiver, err := realtime.NewReceiver(modem, func(data []byte) {
+    fmt.Printf("Received: %s\n", string(data))
+})
 ```
 
-See `fsk/README.md` for complete library documentation.
+### File Operations
+
+```go
+import (
+    "github.com/gleicon/go-fsk/fsk/core"
+    "github.com/gleicon/go-fsk/fsk/utils"
+)
+
+modem := core.New(core.DefaultConfig())
+signal := modem.Encode([]byte("Hello"))
+
+// Write WAV file
+err := utils.WriteWAVFile("output.wav", signal, modem.Config())
+
+// Read WAV file
+signal, err := utils.ReadWAVFile("input.wav")
+decoded := modem.Decode(signal)
+```
+
+## Package Architecture
+
+The codebase is organized into separate packages for clean separation of concerns:
+
+### Core Package (`fsk/core/`)
+- **Pure FSK algorithm implementation**
+- No external dependencies
+- Works everywhere: CLI, WebAssembly, embedded systems
+- Contains: signal processing, encoding, decoding, configuration
+
+### Realtime Package (`fsk/realtime/`)  
+- **Real-time audio I/O using malgo**
+- Desktop and server platforms only
+- Contains: transmitters, receivers, chat sessions, channel management
+- Depends on: `fsk/core`, `malgo` (cross-platform audio)
+
+### Utils Package (`fsk/utils/`)
+- **Shared utilities and file operations**
+- Platform-independent file I/O
+- Contains: WAV file reading/writing
+- Depends on: `fsk/core`
+
+### Benefits
+- **WebAssembly Support**: Core algorithm runs in browsers without audio dependencies
+- **Code Reuse**: Same core algorithm used by CLI, WASM, and examples
+- **Clean Testing**: Core algorithm testable without audio hardware
+- **Platform Flexibility**: Easy to add other audio backends
 
 ## Technical Implementation
 

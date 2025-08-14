@@ -258,9 +258,16 @@ wasm-copy-exec:
 wasm-serve: wasm
 	@echo "Starting development server for WASM demo..."
 	@echo "Open http://localhost:8080 in your browser"
-	@cd wasm && python3 -m http.server 8080 2>/dev/null || \
-	 cd wasm && python -m SimpleHTTPServer 8080 2>/dev/null || \
-	 echo "Error: Python not found. Please serve the wasm/ directory manually."
+	@echo "Press Ctrl+C to stop the server"
+	@cd wasm && \
+	if command -v python3 >/dev/null 2>&1; then \
+		python3 -m http.server 8080; \
+	elif command -v python >/dev/null 2>&1; then \
+		python -m SimpleHTTPServer 8080; \
+	else \
+		echo "Error: Python not found. Please serve the wasm/ directory manually."; \
+		exit 1; \
+	fi
 
 .PHONY: wasm-clean
 wasm-clean:
