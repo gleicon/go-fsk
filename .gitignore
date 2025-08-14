@@ -1,0 +1,5 @@
+.claude/
+test.wav 
+fsk-modem
+*.wav
+build/
